@@ -43,9 +43,7 @@ while True:
     blurred = cv2.GaussianBlur(frame, (11, 11), 0)
     hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
 
-    # construct a mask for the color "green", then perform
-    # a series of dilations and erosions to remove any small
-    # blobs left in the mask
+    # construct a mask for the color yellow nad red
     yellowMask = cv2.inRange(hsv, yellowLower, yellowUpper)
     yellowMask = cv2.erode(yellowMask, None, iterations=2)
     yellowMask = cv2.dilate(yellowMask, None, iterations=2)
@@ -65,14 +63,17 @@ while True:
     yellowCenter = None
     redCenter = None
 
-    yellowX, yellowY, yellowRadius, yellowPts = deque(maxlen=32)
+    yellowX = deque(maxlen=32)
+    yellowY = deque(maxlen=32)
+    yellowRadius = deque(maxlen=32)
+    yellowPts = deque(maxlen=32)
 
     # only proceed if at least one contour was found
     if len(yellowCounts) > 0:
 
         for i in range(0, len(yellowCounts)):
             ((x, y), radius) = cv2.minEnclosingCircle(yellowCounts[i])
-            if radius > 20:
+            if 20 < radius < 50:
                 yellowX.append(x)
                 yellowY.append(y)
                 yellowRadius.append(radius)
@@ -86,12 +87,16 @@ while True:
             cv2.circle(frame, (int(yellowX[i]), int(yellowY[i])), int(yellowRadius[i]), (0, 255, 255), 2)
             cv2.circle(frame, yellowPts[i], 5, (0, 255, 255), -1)
 
-    redX, redY, redRadius, redPts = deque(maxlen=32)
+    redX = deque(maxlen=32)
+    redY = deque(maxlen=32)
+    redRadius = deque(maxlen=32)
+    redPts = deque(maxlen=32)
+
     if len(redCounts) > 0:
 
         for i in range(0, len(redCounts)):
             ((x, y), radius) = cv2.minEnclosingCircle(redCounts[i])
-            if radius > 20:
+            if 20 < radius < 50:
                 redX.append(x)
                 redY.append(y)
                 redRadius.append(radius)
